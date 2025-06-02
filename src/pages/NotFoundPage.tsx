@@ -8,7 +8,7 @@ const NotFoundPage: React.FC = () => {
       <h2 className="text-2xl sm:text-4xl font-semibold text-black">
         Page Not Found
       </h2>
-      <p className="text-slate-600 max-w-md">
+      <p className="text-gray-600 max-w-md">
         Oops! The page you're looking for doesn't exist. It might have been
         moved, deleted or perhaps you mistyped the URL.
       </p>

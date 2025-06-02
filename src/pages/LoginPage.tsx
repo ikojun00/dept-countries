@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { loginUser } from "../api/authService";
 import Spinner from "../components/icons/Spinner";
+import ErrorMessage from "../components/ErrorMessage";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -39,16 +40,12 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="flex px-4 items-center justify-center min-h-screen bg-gradient-to-b from-cyan-500 to-blue-500">
+    <div className="flex px-4 items-center justify-center min-h-screen bg-gradient-to-b from-cyan-800 to-blue-800">
       <div className="p-8 bg-white shadow-2xl rounded-xl w-full max-w-md">
         <h2 className="text-3xl font-bold mb-8 text-center text-black">
           Login
         </h2>
-        {error && (
-          <p className="mb-4 text-red-600 text-sm bg-red-100 p-3 rounded-md border border-red-300">
-            {error}
-          </p>
-        )}
+        {error && <ErrorMessage error={error} />}
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
             <label htmlFor="email" className="text-sm font-medium">
@@ -81,7 +78,7 @@ const LoginPage: React.FC = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white font-semibold mt-4 py-3 px-4 rounded-lg flex items-center justify-center"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold mt-4 py-3 px-4 rounded-lg flex items-center justify-center"
           >
             {isLoading ? (
               <>
