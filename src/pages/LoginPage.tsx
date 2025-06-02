@@ -42,13 +42,16 @@ const LoginPage: React.FC = () => {
   return (
     <div className="flex px-4 items-center justify-center min-h-screen bg-gradient-to-b from-cyan-800 to-blue-800">
       <div className="p-8 bg-white shadow-2xl rounded-xl w-full max-w-md">
-        <h2 className="text-3xl font-bold mb-8 text-center text-black">
+        <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">
           Login
         </h2>
         {error && <ErrorMessage error={error} />}
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
-            <label htmlFor="email" className="text-sm font-medium">
+            <label
+              htmlFor="email"
+              className="text-sm font-medium text-gray-800"
+            >
               Email
             </label>
             <input
@@ -56,13 +59,16 @@ const LoginPage: React.FC = () => {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="px-4 py-2.5 border rounded-lg"
+              className="px-4 py-2.5 border border-gray-800 rounded-lg"
               placeholder="your.email@example.com"
               disabled={isLoading}
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label htmlFor="password" className="text-sm font-medium">
+            <label
+              htmlFor="password"
+              className="text-sm font-medium text-gray-800"
+            >
               Password
             </label>
             <input
@@ -70,7 +76,7 @@ const LoginPage: React.FC = () => {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="px-4 py-2.5 border rounded-lg"
+              className="px-4 py-2.5 border border-gray-800 rounded-lg"
               placeholder="••••••••"
               disabled={isLoading}
             />
