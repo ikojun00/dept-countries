@@ -2,9 +2,12 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { fetchRandomCountries } from "../api/countryService";
 import type { CountryItem, ViewMode } from "../types";
-import Spinner from "../components/icons/Spinner";
 import { COUNTRIES } from "../constants/countries";
 import ErrorMessage from "../components/ErrorMessage";
+import PageHeader from "../components/CountriesPage/PageHeader";
+import SavedSection from "../components/CountriesPage/SavedSection";
+import FetchSection from "../components/CountriesPage/FetchSection";
+import ViewModeControls from "../components/CountriesPage/ViewModeControls";
 
 const CountriesPage: React.FC = () => {
   const { token, logout } = useAuth();
@@ -37,6 +40,7 @@ const CountriesPage: React.FC = () => {
     setIsLoading(true);
     setError(null);
     setFetchedCountries([]);
+
     try {
       const countriesData = await fetchRandomCountries(fetchLimit, token);
       const sortedCountries = countriesData.sort((a, b) =>
@@ -69,174 +73,43 @@ const CountriesPage: React.FC = () => {
     );
   };
 
-  const handleLogout = () => logout();
+  const isCountrySaved = (countryCode: string): boolean => {
+    return savedCountries.some((c) => c.code === countryCode);
+  };
 
   const showFetchSection = viewMode === "all" || viewMode === "fetch";
   const showSavedSection = viewMode === "all" || viewMode === "saved";
 
   return (
     <div className="min-h-screen">
-      <header className="bg-gradient-to-b from-cyan-800 to-blue-800 text-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
-          <h1 className="text-2xl sm:text-3xl font-bold">Countries</h1>
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg text-sm sm:text-base"
-          >
-            Logout
-          </button>
-        </div>
-      </header>
+      <PageHeader handleLogout={logout} />
       <main className="flex flex-col gap-4 container mx-auto p-4 sm:p-6 lg:p-8">
         {error && <ErrorMessage error={error} />}
-        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center mt-6">
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setViewMode("all")}
-              className={`px-4 py-2 rounded-lg text-sm sm:text-base font-medium ${
-                viewMode === "all"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
-              }`}
-            >
-              All Sections
-            </button>
-            <button
-              onClick={() => setViewMode("fetch")}
-              className={`px-4 py-2 rounded-lg text-sm sm:text-base font-medium ${
-                viewMode === "fetch"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
-              }`}
-            >
-              Fetch Countries
-            </button>
-            <button
-              onClick={() => setViewMode("saved")}
-              className={`px-4 py-2 rounded-lg text-sm sm:text-base font-medium ${
-                viewMode === "saved"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
-              }`}
-            >
-              Saved Countries ({savedCountries.length})
-            </button>
-          </div>
-        </div>
+        <ViewModeControls
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          savedCountriesCount={savedCountries.length}
+        />
         {showFetchSection && (
-          <section className="flex flex-col gap-6 py-6">
-            <h2 className="text-xl sm:text-2xl font-semibold text-gray-700">
-              Fetch New Countries
-            </h2>
-            <div className="flex gap-2 flex-col items-start">
-              <label
-                htmlFor="fetchLimit"
-                className="text-sm font-medium text-gray-600"
-              >
-                Number to fetch (1-10):
-              </label>
-              <input
-                type="number"
-                id="fetchLimit"
-                value={fetchLimit}
-                onChange={(e) => setFetchLimit(Number(e.target.value))}
-                min="1"
-                max="10"
-                className="w-24 p-2 border rounded-md sm:text-sm"
-              />
-              <button
-                onClick={handleFetchCountries}
-                disabled={isLoading}
-                className="text-white font-semibold bg-blue-600 hover:bg-blue-700 my-4 py-2.5 px-6 rounded-lg flex items-center justify-center"
-              >
-                {isLoading ? (
-                  <>
-                    <Spinner className="mr-2" />
-                    Fetching...
-                  </>
-                ) : (
-                  "Fetch Countries"
-                )}
-              </button>
-            </div>
-            {fetchedCountries.length > 0 && (
-              <div>
-                <h3 className="text-lg sm:text-xl font-medium mb-3 text-gray-600">
-                  Fetched Results ({fetchedCountries.length}):
-                </h3>
-                <ul className="flex flex-col gap-3">
-                  {fetchedCountries.map((country) => (
-                    <li
-                      key={country.code}
-                      className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3.5 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-lg"
-                    >
-                      <div className="mb-2 sm:mb-0">
-                        <span className="text-md sm:text-lg font-medium text-gray-800">
-                          {country.name}
-                        </span>
-                        <span className="text-sm text-gray-500 ml-2">
-                          ({country.code})
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => handleSaveCountry(country)}
-                        disabled={savedCountries.some(
-                          (c) => c.code === country.code
-                        )}
-                        className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white text-center text-sm font-medium py-1.5 px-4 rounded-md disabled:bg-gray-300 disabled:text-gray-500"
-                      >
-                        {savedCountries.some((c) => c.code === country.code)
-                          ? "✓ Saved"
-                          : "+ Save to List"}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </section>
+          <FetchSection
+            fetchLimit={fetchLimit}
+            setFetchLimit={setFetchLimit}
+            handleFetchCountries={handleFetchCountries}
+            isLoading={isLoading}
+            fetchedCountries={fetchedCountries}
+            handleSaveCountry={handleSaveCountry}
+            isCountrySaved={isCountrySaved}
+          />
         )}
         {showFetchSection && showSavedSection && (
           <hr className="border-gray-300" />
         )}
         {showSavedSection && (
-          <section className="flex flex-col gap-6 py-6">
-            <h2 className="text-xl sm:text-2xl font-semibold text-gray-700">
-              My Saved Countries List ({savedCountries.length})
-            </h2>
-            {savedCountries.length > 0 ? (
-              <ul className="flex flex-col gap-3">
-                {savedCountries.map((country) => (
-                  <li
-                    key={`saved-${country.code}`}
-                    className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3.5 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-lg"
-                  >
-                    <div className="mb-2 sm:mb-0">
-                      <span className="text-md sm:text-lg font-medium text-gray-800">
-                        {country.name}
-                      </span>
-                      <span className="text-sm text-gray-500 ml-2">
-                        ({country.code})
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => handleRemoveCountry(country.code)}
-                      className="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white text-center text-sm font-medium py-1.5 px-4 rounded-md"
-                    >
-                      &times; Remove
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-500 italic">
-                Your list is empty.{" "}
-                {showFetchSection
-                  ? "Fetch and save some countries to get started!"
-                  : "Switch to 'All Sections' or 'Fetch Countries' to fetch countries."}
-              </p>
-            )}
-          </section>
+          <SavedSection
+            savedCountries={savedCountries}
+            handleRemoveCountry={handleRemoveCountry}
+            showFetchSectionHint={showFetchSection}
+          />
         )}
       </main>
     </div>
