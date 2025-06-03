@@ -23,6 +23,8 @@ const CountriesPage: React.FC = () => {
     }
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isFetchActionOnCooldown, setIsFetchActionOnCooldown] =
+    useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [fetchLimit, setFetchLimit] = useState<number>(COUNTRIES.FETCH_LIMIT);
   const [viewMode, setViewMode] = useState<ViewMode>("all");
@@ -37,9 +39,17 @@ const CountriesPage: React.FC = () => {
       logout();
       return;
     }
+    if (isFetchActionOnCooldown) {
+      setError("Please wait before fetching more countries.");
+      return;
+    }
     setIsLoading(true);
     setError(null);
     setFetchedCountries([]);
+    setIsFetchActionOnCooldown(true);
+    setTimeout(() => {
+      setIsFetchActionOnCooldown(false);
+    }, COUNTRIES.FETCH_ACTION_COOLDOWN_MS);
 
     try {
       const countriesData = await fetchRandomCountries(fetchLimit, token);
@@ -55,7 +65,7 @@ const CountriesPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [token, fetchLimit, logout]);
+  }, [token, fetchLimit, logout, isFetchActionOnCooldown]);
 
   const handleSaveCountry = (countryToSave: CountryItem) => {
     if (!savedCountries.find((country) => country.code === countryToSave.code))
@@ -96,6 +106,7 @@ const CountriesPage: React.FC = () => {
             setFetchLimit={setFetchLimit}
             handleFetchCountries={handleFetchCountries}
             isLoading={isLoading}
+            isFetchButtonDisabled={isFetchActionOnCooldown}
             fetchedCountries={fetchedCountries}
             handleSaveCountry={handleSaveCountry}
             isCountrySaved={isCountrySaved}

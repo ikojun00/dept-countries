@@ -11,6 +11,7 @@ interface FetchSectionProps {
   fetchedCountries: CountryItem[];
   handleSaveCountry: (country: CountryItem) => void;
   isCountrySaved: (countryCode: string) => boolean;
+  isFetchButtonDisabled: boolean;
 }
 
 const FetchSection: React.FC<FetchSectionProps> = ({
@@ -21,6 +22,7 @@ const FetchSection: React.FC<FetchSectionProps> = ({
   fetchedCountries,
   handleSaveCountry,
   isCountrySaved,
+  isFetchButtonDisabled,
 }) => {
   return (
     <section className="flex flex-col gap-6 py-6">
@@ -42,11 +44,12 @@ const FetchSection: React.FC<FetchSectionProps> = ({
           min="1"
           max="10"
           className="w-24 p-2 border rounded-md sm:text-sm"
+          disabled={isFetchButtonDisabled}
         />
         <button
           onClick={handleFetchCountries}
-          disabled={isLoading}
-          className="text-white font-semibold bg-blue-600 hover:bg-blue-700 my-4 py-2.5 px-6 rounded-lg flex items-center justify-center"
+          disabled={isFetchButtonDisabled}
+          className="text-white font-semibold bg-blue-600 hover:bg-blue-700 my-4 py-2.5 px-6 rounded-lg flex items-center justify-center disabled:bg-gray-300 disabled:text-gray-500"
         >
           {isLoading ? (
             <>

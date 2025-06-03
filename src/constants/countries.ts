@@ -1,3 +1,4 @@
 export const COUNTRIES = {
   FETCH_LIMIT: 10,
+  FETCH_ACTION_COOLDOWN_MS: 5000,
 };
